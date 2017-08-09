@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+set -vx
+
+bundle install
+
+if [ ! -d Ideal-Image-Slider-JS ]; then
+  git clone https://github.com/Codeinwp/Ideal-Image-Slider-JS
+else
+  echo "Good - you have the source checked out already"
+fi
+
+# Do any other automated setup that you need to do here

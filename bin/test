@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+rm -rf test_app
+rails new test_app --skip-bundle --skip-active-record --skip-spring --skip-test-unit
+cat <<EOF >> test_app/Gemfile
+gem 'jquery-rails'
+gem 'ideal-image-slider-rails', path: '..'
+EOF
+
+cd test_app
+bundle install --local
+
+cat <<EOF >> app/assets/javascripts/application.js
+//= require 'jquery'
+//= require 'ideal-image-slider'
+
+\$(document).on('turbolinks:load', function (e) {
+ var slider = new IdealImageSlider.Slider({
+    selector: '#slider',
+    height: 400, // Required but can be set by CSS
+    interval: 4000
+  });
+  slider.start();
+});
+
+EOF
+
+cat <<EOF >> app/assets/stylesheets/application.css
+/*
+ *= require 'ideal-image-slider'
+ *= require 'ideal-image-slider/default'
+ */
+EOF
+
+rails g controller slider index --no-javascripts --no-stylesheets --no-tests
+cat <<EOF > app/views/slider/index.html.erb
+<div id="slider">
+  <img src="http://lorempixel.com/400/200/abstract/1" alt="Minimum required attributes">
+  <img data-src="http://lorempixel.com/400/200/abstract/2" src="" alt="Use data-src for on-demand loading">
+  <img data-src="http://lorempixel.com/400/200/abstract/3" data-src-2x="http://lorempixel.com/800/400/abstract/3" src="" alt="Use data-src-2x for HiDPI devices">
+</div>
+EOF
+
+(sleep 5; open http://localhost:3000/slider/index) &
+
+rails s
+
